@@ -19,12 +19,34 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
+        
+        // Generate participants list HTML
+        let participantsHTML = "";
+        if (details.participants.length > 0) {
+          const participantsList = details.participants
+            .map(participant => `<li>${participant}</li>`)
+            .join("");
+          participantsHTML = `
+            <div class="participants-list">
+              <h5>Current Participants (${details.participants.length}):</h5>
+              <ul>${participantsList}</ul>
+            </div>
+          `;
+        } else {
+          participantsHTML = `
+            <div class="participants-list">
+              <h5>Current Participants (0):</h5>
+              <p class="no-participants">No participants yet - be the first to sign up!</p>
+            </div>
+          `;
+        }
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          ${participantsHTML}
         `;
 
         activitiesList.appendChild(activityCard);
@@ -62,6 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        // Refresh activities list to show updated participants
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
